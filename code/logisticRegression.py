@@ -68,12 +68,6 @@ def init_weights(n):
 
     return np.matrix(W)
 
-def cost_function(m, y, x, h):
-    cost = 0
-    for example in range(m):
-        cost += y*np.log2(h*x) + (1-y)*np.log2(1-h(x))
-    pass
-    #cost = -1/m 
 
 Error_k = []
 
@@ -92,8 +86,10 @@ def error(W,X,y):
     error = y*np.log(sigmoid(z)) + (1-y)*np.log(1-sigmoid(z))
     return error
 
-def gradiendDecent(learning_rate, n_iterations, W, X, Y, e = False):
+def gradiendDecent(learning_rate, n_iterations, n, X, Y, e = False):
+    W = init_weights(X.shape[1])
     #We need to itterate over m times, to train every weight
+    E_ce = [] #so we can test different functions.
     k = 0 #first iteration
     for n in range(n_iterations):
         sum_n = init_weights(X.shape[1])
@@ -110,7 +106,7 @@ def gradiendDecent(learning_rate, n_iterations, W, X, Y, e = False):
         if(e):
             #Calculate error for k-th iteration.
             Eck_k = error_N(W,X,Y)
-            Error_k.append(Eck_k)
+            E_ce.append(Eck_k)
         #We need to check if our new weights are the same as last time, and change learning rate
         #for e in range(W.shape[0]):
            # if(tempW[0])
@@ -119,6 +115,7 @@ def gradiendDecent(learning_rate, n_iterations, W, X, Y, e = False):
         #    print("Converge")
         #    return W
             #learning_rate *= 0.5 #half learning rate.
+    Error_k.append(E_ce)
     return W
 
 #Read csv file
@@ -129,14 +126,16 @@ testData = np.loadtxt(open("../classification/cl_test_1.csv", "rb"), delimiter="
 
 X,Y = init(trainData) #Initialize data matrixes
 
-P,N = seperate_data(testData)
+P,N = init(testData)
 
 #Initalise weights to all zeros
-W = init_weights(X.shape[1])
+#W = init_weights(X.shape[1])
 
 learning_rate = 0.1
 
-W = gradiendDecent(learning_rate, 1000, W, X, Y,True)
+W = gradiendDecent(learning_rate, 1000, X.shape[1], X, Y,True)
+
+W = gradiendDecent(learning_rate,1000, X.shape[1], P, N, True)
 
 #Function that we want to plot(linear function) with our trained weights.
 def n(x):
@@ -176,6 +175,6 @@ print(error_N(W,X,Y))
 
 x = np.arange(0, 1000, 1)
 #plot the data
-pyplot.title("decision boundry and test_data")
-pyplot.plot(x, Error_k,'r--')
+#pyplot.title("decision boundry and test_data")
+pyplot.plot(x, Error_k[0],'r--', x, Error_k[1], 'g--')
 pyplot.show()
