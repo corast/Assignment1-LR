@@ -1,5 +1,6 @@
 #Assignment 1 Logistic Regression
 import numpy as np
+import matplotlib.pyplot as pyplot
 #def h(X,W):
 #    return W.transpose()*X
 
@@ -74,7 +75,24 @@ def cost_function(m, y, x, h):
     pass
     #cost = -1/m 
 
-def gradiendDecent(learning_rate, n_iterations, W, X, Y):
+Error_k = []
+
+def error_N(W, X, Y):
+    N = X.shape[0]
+    sume = 0
+    for i in range(N):
+        #Itterate
+        z = W.transpose()*X[i].transpose()
+        sume += Y[i]*np.log(sigmoid(z)) + (1-np.asscalar(Y[i]))*np.log(1-sigmoid(z))
+    return ((-1)*np.asscalar(sume))/N
+
+def error(W,X,y):
+    """ Calculate error per example. """
+    z = W.transpose()*X.transpose()
+    error = y*np.log(sigmoid(z)) + (1-y)*np.log(1-sigmoid(z))
+    return error
+
+def gradiendDecent(learning_rate, n_iterations, W, X, Y, e = False):
     #We need to itterate over m times, to train every weight
     k = 0 #first iteration
     for n in range(n_iterations):
@@ -85,45 +103,23 @@ def gradiendDecent(learning_rate, n_iterations, W, X, Y):
             z = W.transpose()*X[i].transpose()
             sum_n = sum_n + np.asscalar(sigmoid(z) - Y[i])*X[i].transpose()
 
+
         #Update the weigth with this sum.
         tempW = W
         W = W - learning_rate*sum_n
+        if(e):
+            #Calculate error for k-th iteration.
+            Eck_k = error_N(W,X,Y)
+            Error_k.append(Eck_k)
         #We need to check if our new weights are the same as last time, and change learning rate
         #for e in range(W.shape[0]):
            # if(tempW[0])
         #Convergence check
-        if(np.array_equal(W,tempW)):
-            print("Converge")
-            return W
+        #if(error_N(W,X,N)):
+        #    print("Converge")
+        #    return W
             #learning_rate *= 0.5 #half learning rate.
     return W
-
-def gradiendDecentReq(learning_rate, n_iterations, W, X, Y,k):
-    sum_n = init_weights(X.shape[1])
-    for i in range(X.shape[0]): #Itterate over every training example.
-            #Note the need for transposing X as well, this is because the way X matrix is represented with one example in every row 
-            #print("{} {} {} {} {} {} {}".format(X[1].shape, W.shape,Y.shape, Y.transpose().shape, X.transpose().shape))
-        z = W.transpose()*X[i].transpose()
-        sum_n = sum_n + np.asscalar(sigmoid(z) - Y[i])*X[i].transpose()
-
-        #Update the weigth with this sum.
-    tempW = W
-    W = W - learning_rate*sum_n
-        #We need to check if our new weights are the same as last time, and change learning rate
-        #for e in range(W.shape[0]):
-           # if(tempW[0])
- 
-    print(W)
-
-    if(n_iterations == 0):
-        return W
-    elif(np.array_equal(W,tempW)):
-         #half learning rate.
-        gradiendDecentReq(learning_rate*0.8, n_iterations-1,W,X,Y,k+1)
-    else:
-        gradiendDecentReq(learning_rate, n_iterations-1,W,X,Y,k+1)
-
-
 
 #Read csv file
 trainData = np.loadtxt(open("../classification/cl_train_1.csv", "rb"), delimiter=",")
@@ -140,8 +136,7 @@ W = init_weights(X.shape[1])
 
 learning_rate = 0.1
 
-W = gradiendDecent(learning_rate, 1000, W, X, Y)
-print(W)
+W = gradiendDecent(learning_rate, 1000, W, X, Y,True)
 
 #Function that we want to plot(linear function) with our trained weights.
 def n(x):
@@ -151,7 +146,7 @@ def p(x):
     return predict_function(W*x.transform())
 
 #Gather values to plot from test data
-X_plot, Y_plot = init_plot(testData_t3)
+#X_plot, Y_plot = init_plot(testData_t3)
 
 #Plot function from 0 to 1.2 with interval 0.1
 x = np.arange(0.0, 1.2, 0.1)
@@ -162,9 +157,25 @@ def test_data(W):
     for example in range(X.shape[0]):
         predict_function(X)
 
+def error_N(W, X, Y):
+    N = X.shape[0]
+    sume = 0
+    for i in range(N):
+        #Itterate
+        z = W.transpose()*X[i].transpose()
+        sume += Y[i]*np.log(sigmoid(z)) + (1-np.asscalar(Y[i]))*np.log(1-sigmoid(z))
+    return ((-1)*np.asscalar(sume))/N
 
+def error(W,X,y):
+    """ Calculate error per example. """
+    z = W.transpose()*X.transpose()
+    error = y*np.log(sigmoid(z)) + (1-y)*np.log(1-sigmoid(z))
+    return error
 
+print(error_N(W,X,Y))
+
+x = np.arange(0, 1000, 1)
 #plot the data
 pyplot.title("decision boundry and test_data")
-pyplot.plot(x, h(x),'r--', X_plot, Y_plot, 'bo' )
-#pyplot.show()
+pyplot.plot(x, Error_k,'r--')
+pyplot.show()

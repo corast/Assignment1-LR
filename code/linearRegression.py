@@ -49,20 +49,29 @@ def test(W, data):
     X,Y = init(data)
 
     #Equation 6 
-    Emse = (X*W - Y).transpose()*(X*W-Y)
+    Emse = ((X*W - Y).transpose())*(X*W-Y)
 
     return Emse
 
 #First we train and calculate weights
-Weights = train(testData)
-Error =  test(Weights, testData)
+Weights = train(trainData)
+
+
+print(np.asarray(Weights))
+
 #np.squeeze(np.asarray(Weights[0])
 #Show weights and error after testing
-print("w_0 =  {0:.4f}, w_1 = {1:.4f}, w_2 = {2:.4f}, Model error: E_mse(w) = {3:4f}".format(
+print("w_0 =  {0}, w_1 = {1}, w_2 = {2}".format(
     np.squeeze(np.asarray(Weights[0])), 
     np.squeeze(np.asarray(Weights[1])), 
-    np.squeeze(np.asarray(Weights[2])), 
-    np.squeeze(np.asarray(Error))))
+    np.squeeze(np.asarray(Weights[2]))))
+
+Error = test(Weights, testData)
+print("Error: testData = ",end = "")
+print(np.asscalar(Error))
+Error_test = test(Weights, trainData)
+print("Error: trainData =  ",end = "")
+print(np.asscalar(Error_test))
 
 #Task 3, plot line after training and plot values
 
