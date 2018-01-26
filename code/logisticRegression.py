@@ -13,38 +13,8 @@ def predict_function(z):
         return 1
     return 0
 
-#TODO: Seperate positiv and negativ examples when plotting
-def seperate_data(data):
-    """ Split test examples into positiv and negativ examples for easy visualization when plotting """
-    Xneg = []
-
-    Xpos = []
-
-    numberOfParameters = data[0].size     
-
-    for example in data:
-        if(example[1] == 1):
-            Xpos.append(example[0])
-        else:
-            Xneg.append(example[0])
-    
-    return Xneg,Xpos
-
-def init_plot_data(data):
-    """ Split test examples into X and Y array, for easy plotting """
-    X = []
-    Y = []
-
-    numberOfParameters = data[0].size
-    for example in data:
-        Y.append(example[1])
-        row = [1]
-        for i in range(numberOfParameters-1):
-            row.append(example[i])
-        X.append(row)
-    return X,Y 
-
 def init(data):
+    """ Initialize data sets into workable matrixes."""
     X = []
     Y = []
 
@@ -68,8 +38,8 @@ def init_weights(n):
 
     return np.matrix(W)
 
-
-Error_k = []
+#This holds the 
+#Error_k = []
 
 def error_N(W, X, Y):
     N = X.shape[0]
@@ -86,7 +56,7 @@ def error(W,X,y):
     error = y*np.log(sigmoid(z)) + (1-y)*np.log(1-sigmoid(z))
     return error
 
-def gradiendDecent(learning_rate, n_iterations, n, X, Y, e = False):
+def gradiendDecent(learning_rate, n_iterations, X, Y, e = False):
     W = init_weights(X.shape[1])
     #We need to itterate over m times, to train every weight
     E_ce = [] #so we can test different functions.
@@ -115,7 +85,10 @@ def gradiendDecent(learning_rate, n_iterations, n, X, Y, e = False):
         #    print("Converge")
         #    return W
             #learning_rate *= 0.5 #half learning rate.
-    Error_k.append(E_ce)
+    if(e):
+        #If we just want the error to plot, we instead call this function.
+        return E_ce
+        #Error_k.append(E_ce)
     return W
 
 #Read csv file
@@ -133,9 +106,7 @@ P,N = init(testData)
 
 learning_rate = 0.1
 
-W = gradiendDecent(learning_rate, 1000, X.shape[1], X, Y,True)
 
-W = gradiendDecent(learning_rate,1000, X.shape[1], P, N, True)
 
 #Function that we want to plot(linear function) with our trained weights.
 def n(x):
@@ -147,14 +118,7 @@ def p(x):
 #Gather values to plot from test data
 #X_plot, Y_plot = init_plot(testData_t3)
 
-#Plot function from 0 to 1.2 with interval 0.1
-x = np.arange(0.0, 1.2, 0.1)
 
-def test_data(W):
-    X,Y = init_plot_data(testData)
-
-    for example in range(X.shape[0]):
-        predict_function(X)
 
 def error_N(W, X, Y):
     N = X.shape[0]
@@ -171,10 +135,73 @@ def error(W,X,y):
     error = y*np.log(sigmoid(z)) + (1-y)*np.log(1-sigmoid(z))
     return error
 
-print(error_N(W,X,Y))
+#print(error_N(W,X,Y))
 
-x = np.arange(0, 1000, 1)
-#plot the data
-#pyplot.title("decision boundry and test_data")
-pyplot.plot(x, Error_k[0],'r--', x, Error_k[1], 'g--')
-pyplot.show()
+def plot_error(Error_k):
+    """ plot the error of the classification after 1000 iterations"""
+    x = np.arange(0, 1000, 1)
+    #plot the data
+    pyplot.plot(x, Error_k[0],'r--', x, Error_k[1], 'g--')
+    pyplot.show()
+
+def decision_boundry(W, X):
+    #points where W^t*X = 0
+    boundry = W.transpose()*X.transpose()
+    #print(X.shape)
+    #print(W.shape)
+    print(boundry.shape)
+    return boundry.tolist()
+
+def b(x):
+    return -np.squeeze(np.asarray(W[0]))/np.squeeze(np.asarray(W[2])) - (np.squeeze(np.asarray(W[1])))/(np.squeeze(np.asarray(W[2])))*x
+
+def h(x):
+    return np.squeeze(np.asarray(W_t3[0])) + (np.squeeze(np.asarray(W_t3[1])))*x    
+
+def plot_data(data,W):
+    """ Plot data """
+    numberOfParameters = data[0].size   
+    for example in data:
+        if(example[numberOfParameters-1] == 1):
+            pyplot.plot(example[0],example[1], "go")
+        elif(example[numberOfParameters-1] == 0):
+            pyplot.plot(example[0],example[1], "ro")
+    x = np.arange(0,1,0.1)
+    pyplot.plot(x,b(x,W),'k--')
+    pyplot.xlabel("x1")
+    pyplot.ylabel("x2")
+    pyplot.ylim([0,1])
+    pyplot.xlim([0,1])
+    pyplot.show()
+
+#compute W on the training set
+#W = gradiendDecent(learning_rate, 1000, X, Y,False)
+
+#Print error function with each itteration, but very slow cause we need to run 3 times to compute w, and error plots.
+"""
+Error_k = gradiendDecent(learning_rate, 1000, X, Y, True), gradiendDecent(learning_rate,1000, P, N, True)
+plot_error(Error_k)
+"""
+#Use plot_data to show boundry line on the data
+#plot_data(trainData,W)
+#plot_data(testData,W)
+
+
+
+"""Task 2.2.2"""
+#read csv files
+trainData_2 = np.loadtxt(open("../classification/cl_train_2.csv", "rb"), delimiter=",")
+testData_2 = np.loadtxt(open("../classification/cl_test_2.csv", "rb"), delimiter=",")
+
+X,Y = init(trainData_2)
+W,Z = init(testData_2)
+
+W = gradiendDecent(learning_rate, 1000, X, Y)
+
+def b(x,W):
+    return -np.squeeze(np.asarray(W[0]))/np.squeeze(np.asarray(W[2])) - (np.squeeze(np.asarray(W[1])))/(np.squeeze(np.asarray(W[2])))*x
+
+#plot_data(trainData_2,W)
+Error_k = gradiendDecent(learning_rate, 1000, X, Y, True), gradiendDecent(learning_rate,1000, P, N, True)
+plot_error(Error_k)
+
