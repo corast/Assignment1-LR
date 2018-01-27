@@ -77,9 +77,6 @@ def gradiendDecent(learning_rate, n_iterations, X, Y, e = False):
             #Calculate error for k-th iteration.
             Eck_k = error_N(W,X,Y)
             E_ce.append(Eck_k)
-        #We need to check if our new weights are the same as last time, and change learning rate
-        #for e in range(W.shape[0]):
-           # if(tempW[0])
         #Convergence check
         #if(error_N(W,X,N)):
         #    print("Converge")
@@ -139,9 +136,12 @@ def error(W,X,y):
 
 def plot_error(Error_k):
     """ plot the error of the classification after 1000 iterations"""
+    #Error_k array with two sets of Emc for test and training set.
     x = np.arange(0, 1000, 1)
     #plot the data
     pyplot.plot(x, Error_k[0],'r--', x, Error_k[1], 'g--')
+    pyplot.legend(('Training set', 'Test set'),loc="upper right")
+    pyplot.ylim([0,1]) 
     pyplot.show()
 
 def decision_boundry(W, X):
@@ -155,24 +155,43 @@ def decision_boundry(W, X):
 def b(x):
     return -np.squeeze(np.asarray(W[0]))/np.squeeze(np.asarray(W[2])) - (np.squeeze(np.asarray(W[1])))/(np.squeeze(np.asarray(W[2])))*x
 
-def h(x):
-    return np.squeeze(np.asarray(W_t3[0])) + (np.squeeze(np.asarray(W_t3[1])))*x    
+def b(x,W):
+    return -np.squeeze(np.asarray(W[0]))/np.squeeze(np.asarray(W[2])) - (np.squeeze(np.asarray(W[1])))/(np.squeeze(np.asarray(W[2])))*x   
 
 def plot_data(data,W):
-    """ Plot data """
+    """ Plot data as coloured points according to acctual value"""
     numberOfParameters = data[0].size   
     for example in data:
+        """ Check y value of each example and plot accordingly """
         if(example[numberOfParameters-1] == 1):
             pyplot.plot(example[0],example[1], "go")
         elif(example[numberOfParameters-1] == 0):
             pyplot.plot(example[0],example[1], "ro")
-    x = np.arange(0,1,0.1)
+    x = np.arange(0,1.1,0.1) #x values to plot the decision boarder.
     pyplot.plot(x,b(x,W),'k--')
     pyplot.xlabel("x1")
     pyplot.ylabel("x2")
     pyplot.ylim([0,1])
     pyplot.xlim([0,1])
     pyplot.show()
+
+def plot_b(data,W):
+    """ Plot data """
+    numberOfParameters = data[0].size   
+    """for example in data:
+        if(example[numberOfParameters-1] == 1):
+            pyplot.plot(example[0],example[1], "go")
+        elif(example[numberOfParameters-1] == 0):
+            pyplot.plot(example[0],example[1], "ro")
+    """
+    x = np.arange(0,1.1,0.1)
+    pyplot.plot(x,b(x,W),'k-')
+    #pyplot.xlabel("x1")
+    #pyplot.ylabel("x2")
+    #pyplot.ylim([0,1])
+    #pyplot.xlim([0,1])
+    pyplot.show()
+    
 
 #compute W on the training set
 #W = gradiendDecent(learning_rate, 1000, X, Y,False)
@@ -186,22 +205,58 @@ plot_error(Error_k)
 #plot_data(trainData,W)
 #plot_data(testData,W)
 
-
-
 """Task 2.2.2"""
 #read csv files
 trainData_2 = np.loadtxt(open("../classification/cl_train_2.csv", "rb"), delimiter=",")
 testData_2 = np.loadtxt(open("../classification/cl_test_2.csv", "rb"), delimiter=",")
 
-X,Y = init(trainData_2)
-W,Z = init(testData_2)
+#X,Y = init(trainData_2)
+#X2,Y2 = init(testData_2)
 
-W = gradiendDecent(learning_rate, 1000, X, Y)
+#W = gradiendDecent(0.01, 1000,X, Y)
 
-def b(x,W):
+
+#error_value_test = error_N(W,X2,Y2)
+#print(error_value_test)
+
+#plot_data(testData_2,W)
+
+#Error_k = gradiendDecent(0.01, 1000, X, Y, True), gradiendDecent(0.01, 1000, X2, Y2, True)
+#plot_error(Error_k)
+
+#plot_data(trainData_2, W)
+
+""" Upscaling the h function to actually solve the function"""
+
+def b_2(x,W):
     return -np.squeeze(np.asarray(W[0]))/np.squeeze(np.asarray(W[2])) - (np.squeeze(np.asarray(W[1])))/(np.squeeze(np.asarray(W[2])))*x
 
-#plot_data(trainData_2,W)
-Error_k = gradiendDecent(learning_rate, 1000, X, Y, True), gradiendDecent(learning_rate,1000, P, N, True)
-plot_error(Error_k)
+def init_updated(data):
+    """ Initialize data sets into workable matrixes with extra data points"""
+    X = []
+    Y = []
 
+    numberOfParameters = data[0].size
+
+    for example in data:
+        Y.append([example[numberOfParameters-1]])
+        row = [1]
+        for i in range(numberOfParameters-1):
+            row.append(example[i])
+        #Add more variables
+        for i in range(numberOfParameters-1):
+            row.append(example[i]*example[i])
+        X.append(row)
+    
+    X = np.matrix(X)
+    Y = np.matrix(Y)
+    return X,Y
+
+X,Y = init_updated(trainData_2)
+X2,Y2 = init_updated(testData_2)
+
+#Train on training set, as before
+W = gradiendDecent(0.1, 1000,X, Y)
+
+#Error_k = gradiendDecent(0.1, 1000, X, Y, True), gradiendDecent(0.1, 1000, X2, Y2, True)
+#plot_error(Error_k)
