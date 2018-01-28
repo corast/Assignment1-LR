@@ -228,8 +228,21 @@ testData_2 = np.loadtxt(open("../classification/cl_test_2.csv", "rb"), delimiter
 
 """ Upscaling the h function to actually solve the function"""
 
-def b_2(x,W):
-    return -np.squeeze(np.asarray(W[0]))/np.squeeze(np.asarray(W[2])) - (np.squeeze(np.asarray(W[1])))/(np.squeeze(np.asarray(W[2])))*x
+def b_2p(x,W): #Positiv solution
+    """ Return one x_2 value to plot for an x_1 value, W[n]=wn""" 
+    A = np.asscalar(W[4])
+    B = np.asscalar(W[2])
+    C = np.asscalar(W[0]) + np.asscalar(W[1])*x + (np.asscalar(W[3]))*x**2
+    return (- B + np.sqrt(B**2 - 4*A*C) ) / (2*A)
+
+
+def b_2n(x,W): #Negative solution
+    """ Return one x_2 value to plot for an x_1 value, W[n]=wn""" 
+    """ Since X is an array of all the values, it calculates every point in one swoop, but this gives us the problem of negative C values in the sqrt, which gives an warning. """
+    A = np.asscalar(W[4])
+    B = np.asscalar(W[2])
+    C = np.asscalar(W[0])+np.asscalar(W[1])*x+(np.asscalar(W[3]))*x**2
+    return (- B - np.sqrt(B**2 - 4*A*C) ) / (2*A)
 
 def init_updated(data):
     """ Initialize data sets into workable matrixes with extra data points"""
@@ -260,3 +273,25 @@ W = gradiendDecent(0.1, 1000,X, Y)
 
 #Error_k = gradiendDecent(0.1, 1000, X, Y, True), gradiendDecent(0.1, 1000, X2, Y2, True)
 #plot_error(Error_k)
+
+def plot_b(data, W):
+    """ Plot data """
+    numberOfParameters = data[0].size
+    for example in data:  
+        if(example[numberOfParameters-1] == 1):
+            pyplot.plot(example[0],example[1], "go")
+        elif(example[numberOfParameters-1] == 0):
+            pyplot.plot(example[0],example[1], "ro")
+
+    x = np.arange(0,1,0.00001)
+    #Plot boundary function
+    pyplot.legend(('Negative', 'Positiv'),loc="upper right")
+    pyplot.plot(x,b_2p(x,W),'k-', x,b_2n(x,W),'k-')
+    pyplot.xlabel("x1")
+    pyplot.ylabel("x2")
+    pyplot.ylim([0,1])
+    pyplot.xlim([0,1])
+    pyplot.show()
+
+plot_b(testData_2,W)
+#print(b_2n(0,W))
