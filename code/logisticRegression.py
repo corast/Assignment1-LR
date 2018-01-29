@@ -234,8 +234,10 @@ plot_error(Error_k)
 
 def plot_b(data, W):
     """ Plot data with new boundary function """
+    #Number of values per row of data in CVS file.
     numberOfParameters = data[0].size
     for example in data:  
+        #plot each example with an corresponding colour representing y value
         if(example[numberOfParameters-1] == 1):
             pyplot.plot(example[0],example[1], "go")
         elif(example[numberOfParameters-1] == 0):
@@ -251,4 +253,37 @@ def plot_b(data, W):
     pyplot.show()
 
 #Run final plot function.
-plot_b(testData_2,W)
+#plot_b(testData_2,W)
+""" Rest is just testing different things.  """
+def init_x_values(n):
+    #initiate x matrix, which is every combination of points
+    X = np.matrix()
+
+def p_b(W,x1,x2):
+    for x in x1:
+        for x in x2:
+            
+    return sigmoid(np.asscalar(W[0]) + np.asscalar(W[0])*x1 + np.asscalar(W[0])*x2 + np.asscalar(W[0])*x1**2 + np.asscalar(W[0])*x2**2)
+
+
+def plot_b_test(data, W):
+    """ Plot data with new boundary function """
+    #Number of values per row of data in CVS file.
+    numberOfParameters = data[0].size
+    for example in data:  
+        #plot each example with an corresponding colour representing y value
+        if(example[numberOfParameters-1] == 1):
+            pyplot.plot(example[0],example[1], "go")
+        elif(example[numberOfParameters-1] == 0):
+            pyplot.plot(example[0],example[1], "ro")
+
+    x = np.arange(0,1,0.00001)
+    #Plot boundary function, and plot settings
+    pyplot.legend(('Negative', 'Positiv'),loc="upper right")
+    pyplot.plot(p_b(W,x,x),'k-')
+    pyplot.xlabel("x1")
+    pyplot.ylabel("x2")
+    #pyplot.ylim([0,1])
+    pyplot.show()
+
+plot_b_test(testData_2,W)
