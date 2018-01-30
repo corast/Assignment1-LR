@@ -169,7 +169,7 @@ testData_2 = np.loadtxt(open("../classification/cl_test_2.csv", "rb"), delimiter
 
 X,Y = init(trainData_2)
 X2,Y2 = init(testData_2)
-""" #Try to train weights with old boundary function 
+#Try to train weights with old boundary function 
 #W = gradiendDecent(0.01, 1000,X, Y)
 
 #error_value_test = error_N(W,X2,Y2)
@@ -180,9 +180,10 @@ X2,Y2 = init(testData_2)
 
 #plot_error(Error_k)
 #plot_data(trainData_2, W)
-"""
 
-""" Upscaling the h function to actually solve the classification problem."""
+#Upscaling the h function to actually solve the classification problem.
+
+
 
 def b_2p(x,W): #Positiv solution
     """ Return one x_2 value to plot for an x_1 value, W[n]=wn""" 
@@ -224,6 +225,9 @@ def init_updated(data):
     Y = np.matrix(Y)
     return X,Y
 
+#""" Final task"""
+X,Y = init_updated(trainData_2)
+X2,Y2 = init_updated(testData_2)
 #Train on training set, as before
 W = gradiendDecent(0.1, 1000,X, Y)
 
@@ -253,8 +257,10 @@ def plot_b(data, W):
     pyplot.show()
 
 #Run final plot function.
-#plot_b(testData_2,W)
+plot_b(testData_2,W)
+
 """ Rest is just testing different things.  """
+"""
 def init_x_values(n):
     #initiate x matrix, which is every combination of points
     X = np.matrix()
@@ -262,12 +268,12 @@ def init_x_values(n):
 def p_b(W,x1,x2):
     for x in x1:
         for x in x2:
-            
+            pass       
     return sigmoid(np.asscalar(W[0]) + np.asscalar(W[0])*x1 + np.asscalar(W[0])*x2 + np.asscalar(W[0])*x1**2 + np.asscalar(W[0])*x2**2)
 
 
 def plot_b_test(data, W):
-    """ Plot data with new boundary function """
+    #Plot data with new boundary function 
     #Number of values per row of data in CVS file.
     numberOfParameters = data[0].size
     for example in data:  
@@ -286,4 +292,5 @@ def plot_b_test(data, W):
     #pyplot.ylim([0,1])
     pyplot.show()
 
-plot_b_test(testData_2,W)
+#plot_b_test(testData_2,W)
+"""
