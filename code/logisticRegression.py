@@ -71,7 +71,7 @@ def gradiendDecent(learning_rate, n_iterations, X, Y, e = False):
         tempW = W
         W = W - learning_rate*sum_n
         if(e):
-            """ If we are only after the error, but not the weights gained. Very slow and inefficient"""
+            """ If we are only after the error, but not the weights gained. Very slow and inefficient """
             #Calculate error for k-th iteration.
             Eck_k = error_N(W,X,Y)
             E_ce.append(Eck_k)
@@ -99,18 +99,11 @@ P,N = init(testData)
 
 learning_rate = 0.1
 
-#Function that we want to plot(linear function) with our trained weights.
-def n(x):
-    return predict_function(W*x.transform())
-
-def p(x):
-    return predict_function(W*x.transform())
-
-#Error value, if needed
+#last Error value, if needed
 #print(error_N(W,X,Y))
 
 def plot_error(Error_k):
-    """ plot the error of the classification after 1000 iterations"""
+    """ plot the error of the classification after 1000 iterations """
     #Error_k array with two sets of Emc for test and training set.
     x = np.arange(0, 1000, 1)
     #plot the data
@@ -120,11 +113,11 @@ def plot_error(Error_k):
     pyplot.show()
 
 def b(x,W):
-    """function that correspond to boundary with our weights"""
+    """ function that correspond to linear boundary with our weights """
     return -np.squeeze(np.asarray(W[0]))/np.squeeze(np.asarray(W[2])) - (np.squeeze(np.asarray(W[1])))/(np.squeeze(np.asarray(W[2])))*x   
 
 def plot_data(data,W):
-    """ Plot data as coloured points according to acctual value"""
+    """ Plot data as coloured points according to acctual value """
     numberOfParameters = data[0].size   
     for example in data:
         """ Check y value of each example and plot colour accordingly """
@@ -140,7 +133,7 @@ def plot_data(data,W):
     pyplot.show()
 
 def plot_b(data,W):
-    """ Plot boundary alone, for debugging"""
+    """ Plot boundary alone, for debugging """
     x = np.arange(0,1.1,0.1)
     pyplot.plot(x,b(x,W),'k-')
     pyplot.ylim([0,1])
@@ -181,13 +174,12 @@ X2,Y2 = init(testData_2)
 #plot_error(Error_k)
 #plot_data(trainData_2, W)
 
+#Final task.
 #Upscaling the h function to actually solve the classification problem.
 
-
-
 def b_2p(x,W): #Positiv solution
-    """ Return one x_2 value to plot for an x_1 value, W[n]=wn""" 
-    """ Since x is an array of all the x1 values, it calculates every point in one swoop, but this gives us the problem of negative C values in the sqrt, which gives an warning. """
+    """ Return one x_2 value to plot for an x_1 value, W[n]=wn
+        Since x is an array of all the x1 values, it calculates every point in one swoop, but this gives us the problem of negative C values in the sqrt, which gives an warning. """
     A = np.asscalar(W[4])
     B = np.asscalar(W[2])
     C = np.asscalar(W[0]) + np.asscalar(W[1])*x + (np.asscalar(W[3]))*x**2
@@ -196,8 +188,8 @@ def b_2p(x,W): #Positiv solution
 
 
 def b_2n(x,W): #Negative solution
-    """ Return one x_2 value to plot for an x_1 value, W[n]=wn""" 
-    """ Since x is an array of all the values x1, it calculates every point in one swoop, but this gives us the problem of negative C values in the sqrt, which gives an warning. """
+    """ Return one x_2 value to plot for an x_1 value, W[n]=wn 
+        Since x is an array of all the values x1, it calculates every point in one swoop, but this gives us the problem of negative C values in the sqrt, which gives an warning. """
     A = np.asscalar(W[4])
     B = np.asscalar(W[2])
     C = np.asscalar(W[0])+np.asscalar(W[1])*x+(np.asscalar(W[3]))*x**2
@@ -205,7 +197,7 @@ def b_2n(x,W): #Negative solution
     return (- B - np.sqrt(B**2 - 4*A*C) ) / (2*A)
 
 def init_updated(data):
-    """ Initialize data sets into workable matrixes with extra data points"""
+    """ Initialize data sets into workable matrixes with extra data points """
     X = []
     Y = []
 
@@ -230,7 +222,7 @@ X,Y = init_updated(trainData_2)
 X2,Y2 = init_updated(testData_2)
 #Train on training set, as before
 W = gradiendDecent(0.1, 1000,X, Y)
-
+print(W)
 """ #Plot error function from both data examples
 Error_k = gradiendDecent(0.1, 1000, X, Y, True), gradiendDecent(0.1, 1000, X2, Y2, True)
 plot_error(Error_k)
@@ -258,39 +250,3 @@ def plot_b(data, W):
 
 #Run final plot function.
 plot_b(testData_2,W)
-
-""" Rest is just testing different things.  """
-"""
-def init_x_values(n):
-    #initiate x matrix, which is every combination of points
-    X = np.matrix()
-
-def p_b(W,x1,x2):
-    for x in x1:
-        for x in x2:
-            pass       
-    return sigmoid(np.asscalar(W[0]) + np.asscalar(W[0])*x1 + np.asscalar(W[0])*x2 + np.asscalar(W[0])*x1**2 + np.asscalar(W[0])*x2**2)
-
-
-def plot_b_test(data, W):
-    #Plot data with new boundary function 
-    #Number of values per row of data in CVS file.
-    numberOfParameters = data[0].size
-    for example in data:  
-        #plot each example with an corresponding colour representing y value
-        if(example[numberOfParameters-1] == 1):
-            pyplot.plot(example[0],example[1], "go")
-        elif(example[numberOfParameters-1] == 0):
-            pyplot.plot(example[0],example[1], "ro")
-
-    x = np.arange(0,1,0.00001)
-    #Plot boundary function, and plot settings
-    pyplot.legend(('Negative', 'Positiv'),loc="upper right")
-    pyplot.plot(p_b(W,x,x),'k-')
-    pyplot.xlabel("x1")
-    pyplot.ylabel("x2")
-    #pyplot.ylim([0,1])
-    pyplot.show()
-
-#plot_b_test(testData_2,W)
-"""
